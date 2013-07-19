@@ -114,7 +114,7 @@ KGN.InGame = {
 	previous_ms: new Date().getTime(),	
 	
 	init: function(){				
-		this.rows = KGN.HEIGHT / KGN.CELL_SIZE;
+		this.rows = ~~(KGN.HEIGHT / KGN.CELL_SIZE);
 		this.columns = KGN.WIDTH / KGN.CELL_SIZE;		
 		this.cells = new Array(this.rows);		
 		for (var i = 0; i < this.rows; i++){
