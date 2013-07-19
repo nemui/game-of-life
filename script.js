@@ -109,17 +109,17 @@ var KGN = {
 KGN.InGame = {	
 	cells: null,
 	rows: 0,
-	columns: 0,
+	cols: 0,
 	neighbour: [[-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1]],
 	previous_ms: new Date().getTime(),	
 	
 	init: function(){				
 		this.rows = ~~(KGN.HEIGHT / KGN.CELL_SIZE);
-		this.columns = KGN.WIDTH / KGN.CELL_SIZE;		
+		this.cols = KGN.WIDTH / KGN.CELL_SIZE;		
 		this.cells = new Array(this.rows);		
 		for (var i = 0; i < this.rows; i++){
-			this.cells[i] = new Array(this.columns);
-			for (var j = 0; j < this.columns; j++){
+			this.cells[i] = new Array(this.cols);
+			for (var j = 0; j < this.cols; j++){
 				var c = KGN.RED;
 				var number = KGN.random(3);				
 				if (number == 1){
@@ -138,13 +138,15 @@ KGN.InGame = {
 		if (this_ms - this.previous_ms >= KGN.INTERVAL){
 			this.previous_ms = this_ms;
 			for (var i = 0; i < this.rows; i++){
-				for (var j = 0; j < this.columns; j++){
+				for (var j = 0; j < this.cols; j++){
 					var alive = 0;	
 					var c = "#";
 					for (var k = 0; k < this.neighbour.length; k++){
 						var ni = i + this.neighbour[k][0];
 						var nj = j + this.neighbour[k][1];
-						if (ni >= 0 && ni < this.rows && nj >= 0 && nj < this.columns && this.cells[ni][nj].status){							
+						ni = (ni < 0) ? ni + this.rows : (ni >= this.rows) ? ni - this.rows : ni;
+						nj = (nj < 0) ? nj + this.cols : (nj >= this.cols) ? nj - this.cols : nj;
+						if (this.cells[ni][nj].status){							
 							alive ++;	
 							var color = this.cells[ni][nj].color;
 							var ch = "00";
@@ -181,7 +183,7 @@ KGN.InGame = {
 				}
 			}
 			for (var i = 0; i < this.rows; i++){
-				for (var j = 0; j < this.columns; j++){
+				for (var j = 0; j < this.cols; j++){
 					this.cells[i][j].status = this.cells[i][j].next_status;
 				}
 			}
@@ -190,7 +192,7 @@ KGN.InGame = {
 	
 	render: function(){		
 		for (var i = 0; i < this.rows; i++){
-			for (var j = 0; j < this.columns; j++){
+			for (var j = 0; j < this.cols; j++){
 				this.cells[i][j].render();				
 			}
 		}
