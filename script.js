@@ -12,10 +12,10 @@ window.requestAnimFrame = (function(){
 })();
 
 var KGN = {
-	WIDTH: 	800,
-	HEIGHT: 600,	
+	WIDTH: 	0,
+	HEIGHT: 0,	
 
-	CELL_SIZE: 2,
+	CELL_SIZE: 0,
 	INTERVAL: 250,
 	
 	WHITE: 	"#FFFFFF",
@@ -39,6 +39,10 @@ var KGN = {
 	init: function() {				
 		KGN.canvas = document.getElementById('game_world');
 		KGN.ctx = KGN.canvas.getContext('2d');
+		
+		KGN.CELL_SIZE = screen.width / 100;
+		KGN.WIDTH = screen.width;
+		KGN.HEIGHT = screen.height;
 		
 		KGN.canvas.width = KGN.WIDTH;
 		KGN.canvas.height = KGN.HEIGHT;
@@ -95,6 +99,10 @@ var KGN = {
 
         KGN.update();
         KGN.render();
+	},
+	
+	random: function(n){
+		return ~~(Math.random()*n);
 	}
 };
 
@@ -113,14 +121,14 @@ KGN.InGame = {
 			this.cells[i] = new Array(this.columns);
 			for (var j = 0; j < this.columns; j++){
 				var c = KGN.RED;
-				var number = Math.floor(Math.random()*3);				
+				var number = KGN.random(3);				
 				if (number == 1){
 					c = KGN.GREEN;
 				}
 				else if (number == 2){
 					c = KGN.BLUE;
 				}				
-				this.cells[i][j] = new KGN.Cell(j * KGN.CELL_SIZE, i * KGN.CELL_SIZE, Math.floor(Math.random()*2), c);
+				this.cells[i][j] = new KGN.Cell(j * KGN.CELL_SIZE, i * KGN.CELL_SIZE, KGN.random(2), c);
 			}
 		}
 	},
@@ -140,36 +148,27 @@ KGN.InGame = {
 							alive ++;	
 							var color = this.cells[ni][nj].color;
 							var ch = "00";
-							var number = Math.floor(Math.random()*3);							
-							while (ch == "00"){															
-								if (number == 0){
-									ch = color.substring(1, 3);	
-								}
-								else if (number == 1){
-									ch = color.substring(3, 5);
-								}
-								else{
-									ch = color.substring(5, 7);
-								}
-								number = Math.floor(Math.random()*3);
+							var number = KGN.random(3);							
+							while (ch == "00"){			
+								ch = color.substring(number*2+1, number*2 + 3);								
+								number = KGN.random(3);
 							}							
 							var chn = parseInt(ch, 16);
-							number = Math.floor(Math.random()*3);
+							number = KGN.random(3);
 							if (number == 1){
-								chn = (Math.floor(chn/2) < 10) ? 10 : Math.floor(chn/2);
+								var halved = Math.floor(chn/2);
+								chn = (halved < 30) ? 30 : halved;
 							}
 							else if (number == 2){
-								chn = (chn*2 > 255) ? 255 : chn*2;
+								var doubled = chn*2;
+								chn = (doubled > 255) ? 255 : doubled;
 							}
 							c += chn.toString(16);
 						}
 					}
-					if (alive < 2){
+					if (alive < 2 || alive > 3){
 						this.cells[i][j].next_status = 0;
-					}
-					else if (alive > 3){
-						this.cells[i][j].next_status = 0;
-					}
+					}					
 					else if (alive == 3){
 						this.cells[i][j].next_status = 1;
 						if (this.cells[i][j].status == 0){
@@ -199,7 +198,6 @@ KGN.InGame = {
 }
 
 KGN.Draw = {
-
 	clear: function() {
 		KGN.ctx.clearRect(0, 0, KGN.WIDTH, KGN.HEIGHT);		
 	},		
